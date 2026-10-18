@@ -1,6 +1,7 @@
 """Train and evaluate forecasters across training-history fractions.
 
-Example (preliminary report setting):
+The test period is evaluated only with --eval_test, which is reserved for the final,
+already-selected configurations. Example (preliminary report setting):
     python train.py --dataset ETTh1 --horizon 24 --models linear transformer --seeds 0
 """
 import argparse
@@ -77,6 +78,8 @@ def main():
     ap.add_argument("--patience", type=int, default=10)
     ap.add_argument("--no_instance_norm", action="store_true",
                     help="disable per-window normalisation of the learned models")
+    ap.add_argument("--eval_test", action="store_true",
+                    help="also evaluate on the test period (only after model selection is final)")
     ap.add_argument("--tag", default="")
     args = ap.parse_args()
 
@@ -114,10 +117,11 @@ def main():
                     model.eval()
                 rec.update(params=params, train_seconds=secs, epochs=len(hist), history=hist)
                 rec["val"] = metrics(*predict(model, val_dl), mu, sd)
-                rec["test"] = metrics(*predict(model, test_dl), mu, sd)
+                if args.eval_test:
+                    rec["test"] = metrics(*predict(model, test_dl), mu, sd)
                 print(f"  {name:11s} seed={seed} params={params:6d} epochs={len(hist):3d} "
-                      f"time={secs:6.1f}s  test MAE={rec['test']['mae']:.3f} "
-                      f"RMSE={rec['test']['rmse']:.3f}")
+                      f"time={secs:6.1f}s  val MAE={rec['val']['mae']:.3f} "
+                      f"RMSE={rec['val']['rmse']:.3f}")
                 with open(out, "a") as f:
                     f.write(json.dumps(rec) + "\n")
                 if name != "naive":

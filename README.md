@@ -27,7 +27,7 @@ curl -L -o data/ETTh2.csv https://raw.githubusercontent.com/zhouhaoyi/ETDataset/
 | `data.py` | Loads the `OT` (oil temperature) column, makes the chronological 12/4/4-month split, the 25/50/100% training-history subsets, normalisation (fitted on the training subset only) and sliding windows. |
 | `models.py` | Linear forecaster, patch-based Transformer, per-window instance normalisation wrapper, seasonal-naive reference. |
 | `train.py` | Trains and evaluates the models for every history fraction; appends one JSON record per run to `results/<tag>.jsonl` (metrics, parameter count, training time, loss history). |
-| `make_figures.py` | Prints the results table and draws the learning-curve figure. |
+| `make_figures.py` | Prints the results table and draws the learning-curve figure (`--split val` by default). |
 
 ## Protocol
 
@@ -36,7 +36,9 @@ curl -L -o data/ETTh2.csv https://raw.githubusercontent.com/zhouhaoyi/ETDataset/
 * Training history: the most recent 25%, 50% or 100% of the training period
   (1969 / 4129 / 8449 training windows at horizon 24). Training inputs and targets
   stay inside that subset; validation/test windows may look back into the preceding period.
-* Loss: MSE on normalised values. Metrics: MAE and RMSE in degrees Celsius on the test period.
+* Loss: MSE on normalised values. Metrics: MAE and RMSE in degrees Celsius.
+* Model selection uses the validation period only. The test period is evaluated (`--eval_test`)
+  only once, for the final selected configurations; the preliminary report uses validation metrics.
 * Optimiser: Adam, lr 1e-3, batch 64, at most 100 epochs, early stopping with
   patience 10 on validation MSE; the best validation checkpoint is evaluated.
 

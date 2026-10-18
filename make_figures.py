@@ -21,28 +21,28 @@ def load(tag):
     return [json.loads(l) for l in open(RESULTS / f"{tag}.jsonl")]
 
 
-def table(recs):
-    """Print a LaTeX-ready summary (mean over seeds) of test MAE / RMSE."""
+def table(recs, split):
+    """Print a summary (mean over seeds) of MAE / RMSE on the given split."""
     agg = defaultdict(list)
     for r in recs:
         agg[(r["model"], r["frac"])].append(r)
     print("model & frac & windows & params & epochs & time(s) & MAE & RMSE")
     for (m, f), rs in sorted(agg.items()):
-        mae = np.mean([r["test"]["mae"] for r in rs])
-        rmse = np.mean([r["test"]["rmse"] for r in rs])
+        mae = np.mean([r[split]["mae"] for r in rs])
+        rmse = np.mean([r[split]["rmse"] for r in rs])
         print(f"{m} & {int(f*100)}% & {rs[0]['n_train_windows']} & {rs[0]['params']} & "
               f"{np.mean([r['epochs'] for r in rs]):.0f} & "
               f"{np.mean([r['train_seconds'] for r in rs]):.1f} & {mae:.3f} & {rmse:.3f}")
 
 
-def learning_curve(recs, out):
+def learning_curve(recs, out, split):
     plt.rcParams.update({"font.family": "serif", "font.serif": ["Times New Roman", "Times"],
                          "mathtext.fontset": "stix", "font.size": 8})
     fig, ax = plt.subplots(figsize=(3.3, 2.1))
     for m in ["linear", "transformer", "naive"]:
         rs = sorted([r for r in recs if r["model"] == m], key=lambda r: r["frac"])
         x = [100 * r["frac"] for r in rs]
-        y = [r["test"]["mae"] for r in rs]
+        y = [r[split]["mae"] for r in rs]
         if m == "naive":
             ax.plot(x, y, "--", color=COLORS[m], lw=1.2, label=LABELS[m])
         else:
@@ -50,25 +50,26 @@ def learning_curve(recs, out):
     ax.set_xticks([25, 50, 100])
     ax.set_xticklabels(["25%", "50%", "100%"])
     ax.set_xlabel("Training history used (fraction of 12 months)")
-    ax.set_ylabel("Test MAE (°C)")
+    ax.set_ylabel(f"{'Validation' if split == 'val' else 'Test'} MAE (°C)")
     ax.grid(axis="y", color="#e4e3df", lw=0.6)
     for s in ["top", "right"]:
         ax.spines[s].set_visible(False)
     ax.legend(frameon=False, fontsize=7, loc="center right", bbox_to_anchor=(1.0, 0.66))
     fig.tight_layout(pad=0.3)
-    fig.savefig(out / "learning_curve_ETTh1_H24.pdf")
+    fig.savefig(out / f"learning_curve_{recs[0]['dataset']}_H{recs[0]['horizon']}_{split}.pdf")
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--tag", default="ETTh1_H24")
+    ap.add_argument("--split", default="val", choices=["val", "test"])
     ap.add_argument("--out", default=str(Path(__file__).resolve().parent / "results"))
     args = ap.parse_args()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     recs = load(args.tag)
-    table(recs)
-    learning_curve(recs, out)
+    table(recs, args.split)
+    learning_curve(recs, out, args.split)
 
 
 if __name__ == "__main__":
