@@ -26,7 +26,7 @@ curl -L -o data/ETTh2.csv https://raw.githubusercontent.com/zhouhaoyi/ETDataset/
 |---|---|
 | `data.py` | Loads the `OT` (oil temperature) column, makes the chronological 12/4/4-month split, the 25/50/100% training-history subsets, normalisation (fitted on the training subset only) and sliding windows. |
 | `models.py` | Linear forecaster, patch-based Transformer, per-window instance normalisation wrapper, seasonal-naive reference. |
-| `train.py` | Trains and evaluates the models for every history fraction; appends one JSON record per run to `results/<tag>.jsonl` (metrics, parameter count, training time, loss history). |
+| `train.py` | Trains and evaluates the models for every history fraction; writes one JSON record per run to `results/<tag>.jsonl` (the file is rewritten on each invocation) (metrics, parameter count, training time, loss history). |
 | `make_figures.py` | Prints the results table and draws the learning-curve figure (`--split val` by default). |
 
 ## Protocol

@@ -87,6 +87,7 @@ def main():
     RESULTS.mkdir(exist_ok=True)
     tag = args.tag or f"{args.dataset}_H{args.horizon}"
     out = RESULTS / f"{tag}.jsonl"
+    out.write_text("")  # each invocation rewrites its results file
 
     for frac in args.fracs:
         train_ds, val_ds, test_ds, (mu, sd) = make_splits(

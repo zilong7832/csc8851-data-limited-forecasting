@@ -37,7 +37,7 @@ def table(recs, split):
 
 def learning_curve(recs, out, split):
     plt.rcParams.update({"font.family": "serif", "font.serif": ["Times New Roman", "Times"],
-                         "mathtext.fontset": "stix", "font.size": 8})
+                         "mathtext.fontset": "stix", "font.size": 8, "pdf.fonttype": 42})
     fig, ax = plt.subplots(figsize=(3.3, 2.1))
     for m in ["linear", "transformer", "naive"]:
         rs = sorted([r for r in recs if r["model"] == m], key=lambda r: r["frac"])
