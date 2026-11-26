@@ -63,6 +63,19 @@ class InstanceNorm(nn.Module):
         return self.model((x - m) / s) * s + m
 
 
+class LSTMForecaster(nn.Module):
+    """Read individual hourly readings in order and decode the final state."""
+
+    def __init__(self, horizon, hidden=32):
+        super().__init__()
+        self.encoder = nn.LSTM(1, hidden, batch_first=True)
+        self.head = nn.Linear(hidden, horizon)
+
+    def forward(self, x):
+        _, (hidden, _) = self.encoder(x.unsqueeze(-1))
+        return self.head(hidden[-1])
+
+
 def seasonal_naive(x, horizon, period=24):
     """Repeat the last observed day (non-trained reference)."""
     last = x[:, -period:]
@@ -73,6 +86,10 @@ def seasonal_naive(x, horizon, period=24):
 def build_model(name, lookback, horizon, instance_norm=True, **kw):
     if name == "linear":
         model = LinearForecaster(lookback, horizon)
+    elif name == "mlp":
+        model = nn.Sequential(nn.Linear(lookback, 64), nn.ReLU(), nn.Linear(64, horizon))
+    elif name == "lstm":
+        model = LSTMForecaster(horizon)
     elif name == "transformer":
         model = PatchTransformer(lookback, horizon, **kw)
     else:

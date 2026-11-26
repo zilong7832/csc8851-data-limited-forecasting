@@ -1,11 +1,28 @@
 # Small Transformers for Data-Limited Time Series Forecasting
 
-Code for the CSC 8851 (Deep Learning, Fall 2026) course project by Zilong Zhang.
-The project studies how the amount of available training history affects the accuracy
-and cost of a compact patch-based Transformer relative to simpler forecasters on the
-ETTh1 / ETTh2 oil-temperature series.
+CSC 8851 Deep Learning, Georgia State University, Fall 2026. Zilong Zhang, Team 17.
 
-## Setup
+## Final study on a GPU server
+
+The final runner implements the proposal’s two-station, two-horizon, three-history comparison, with four learned forecasters, a seasonal-naive reference, three training seeds and matched ablations. The return archive is generated after all expected results pass completeness and numerical consistency checks.
+
+See the [Chinese server quick start](SERVER_GUIDE_ZH.md) and [full experimental protocol](final/PROTOCOL.md).
+
+On a Linux GPU node with CUDA-enabled PyTorch installed:
+
+```bash
+python3 -m pip install -r requirements.txt
+bash run_server.sh --gpu-check
+bash run_server.sh
+```
+
+The final line prints the path to `Team17_RESULTS.zip`. The default is `runs/team17/Team17_RESULTS.zip`. Repeating the same command resumes completed fits. For an offline check without training, use `bash run_server.sh --check`.
+
+## Preliminary study
+
+The original CPU entry point and its archived validation metrics remain available below. For the final study, use the commands above.
+
+### Setup
 
 ```bash
 pip install -r requirements.txt
@@ -20,7 +37,7 @@ curl -L -o data/ETTh1.csv https://raw.githubusercontent.com/zhouhaoyi/ETDataset/
 curl -L -o data/ETTh2.csv https://raw.githubusercontent.com/zhouhaoyi/ETDataset/main/ETT-small/ETTh2.csv
 ```
 
-## Files
+### Preliminary files
 
 | File | Purpose |
 |---|---|
@@ -29,7 +46,7 @@ curl -L -o data/ETTh2.csv https://raw.githubusercontent.com/zhouhaoyi/ETDataset/
 | `train.py` | Trains and evaluates the models for every history fraction; writes one JSON record per run to `results/<tag>.jsonl` (the file is rewritten on each invocation) (metrics, parameter count, training time, loss history). |
 | `make_figures.py` | Prints the results table and draws the learning-curve figure (`--split val` by default). |
 
-## Protocol
+### Preliminary protocol
 
 * Input: previous 168 hours of `OT`; output: next 24 (or 96) hours, predicted directly.
 * Split: first 8640 h train, next 2880 h validation, next 2880 h test.
@@ -42,7 +59,7 @@ curl -L -o data/ETTh2.csv https://raw.githubusercontent.com/zhouhaoyi/ETDataset/
 * Optimiser: Adam, lr 1e-3, batch 64, at most 100 epochs, early stopping with
   patience 10 on validation MSE; the best validation checkpoint is evaluated.
 
-## Reproducing the preliminary-report results
+### Reproducing the preliminary-report results
 
 ```bash
 # Table 2 / Figure 2 of the preliminary report (ETTh1, 24-hour horizon, seed 0)
@@ -57,8 +74,3 @@ python train.py --dataset ETTh1 --horizon 24 --models linear transformer --seeds
 Results of these commands are stored in `results/`. Everything runs on a laptop CPU in
 under a minute (Apple M3, 4 threads).
 
-## Planned for the final report
-
-* MLP and LSTM baselines, ETTh2, the 96-hour horizon, three seeds per configuration,
-  equal-budget validation hyperparameter search.
-* Ablation on ETTh1 / 24 h: one vs. two encoder layers (`--n_layers 1`) at 25% and 100% history.
