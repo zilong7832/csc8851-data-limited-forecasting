@@ -2,6 +2,10 @@
 
 CSC 8851 Deep Learning, Georgia State University, Fall 2026. Zilong Zhang, Team 17.
 
+## Completed study
+
+[Final results, per-seed scores and validation records](results/final/README.md). The normalized direct linear model attained the lowest mean held-out MAE in 11 of 12 data settings. On ETTh1 at 24 hours and 25% history, window normalization reduced patch Transformer MAE from 9.150 to 1.329 °C.
+
 ## Final study on a GPU server
 
 The final runner implements the proposal’s two-station, two-horizon, three-history comparison, with four learned forecasters, a seasonal-naive reference, three training seeds and matched ablations. The return archive is generated after all expected results pass completeness and numerical consistency checks.

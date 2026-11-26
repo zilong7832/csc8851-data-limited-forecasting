@@ -1,0 +1,37 @@
+{
+  "input_sha256": {
+    "ETTh1": "f18de3ad269cef59bb07b5438d79bb3042d3be49bdeecf01c1cd6d29695ee066",
+    "ETTh2": "a3dc2c597b9218c7ce1cd55eb77b283fd459a1d09d753063f944967dd6b9218b"
+  },
+  "protocol": {
+    "ablation_fits": 18,
+    "heldout_scores": 174,
+    "other_main_fits": 96,
+    "selection_fits": 96,
+    "team": 17,
+    "total_fits": 210
+  },
+  "runtime": {
+    "cuda": "13.2",
+    "cudnn": 92101,
+    "device": "NVIDIA H100 80GB HBM3",
+    "device_memory_bytes": 85017493504,
+    "numpy": "2.4.2",
+    "pandas": "3.0.5",
+    "python": "3.11.5",
+    "system": "Linux",
+    "threads": 1,
+    "torch": "2.14.1"
+  },
+  "source_sha256": {
+    "data.py": "ea4842ab1f025bb1a44084e6ad34d4e5d09454b6ed414c395e140c32bd3b020e",
+    "final/__init__.py": "8dba23c0603547582e77f64d7035e106f4b3515304c64a59d5fa0eba206e5a36",
+    "final/engine.py": "151460a2de42d059c710e04338e43aa2738dfff9dc766b8eacbc79b5bd70298b",
+    "final/evaluate.py": "fcf7c39097f052e9ce03070ef9ecccd6e3a26d556be3c29e9216844421727ee6",
+    "final/protocol.py": "edd9b47e2bc8e09d970fcc33a40f13e2d679bc2c22bb34d21078db75dcad3cb7",
+    "final/summarize.py": "22e22344cf01aa5b2a325c4568d2ba70933d95b5e3bce7d4df1e4d6799b1abc4",
+    "final/visuals.py": "23847b90323d2d6884dd6001b4c1d8bde89711f09aa86b64b70ee56525b50cc2",
+    "models.py": "7dbbad2434e107d37b5e0327d77aeb7e32baf4f0965e15d6141cd80b7c6e7493",
+    "run_final.py": "9697eee2158993978831bd707d59cc63191fdfc087d26b0981cf2b8f134e46fc"
+  }
+}
